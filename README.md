@@ -1,0 +1,83 @@
+# CryptO Research Lab
+
+Historical research platform for CryptO Radar.
+
+## Major capabilities
+- historical Binance.US candle downloader
+- no-lookahead next-candle execution
+- expanding walk-forward validation
+- transparent train-only "edge learner"
+- controlled strategy-parameter search
+- regime-specific performance
+- dynamic slippage from candle volatility + estimated volume participation
+- fees and risk-based sizing
+- feature store for every resolved walk-forward test trade
+- permanent experiment notebook with config hashes and notes
+- Monte Carlo resampling of R-multiples
+- $500 / 1% risk defaults
+
+## Render
+Build:
+`pip install -r requirements.txt`
+
+Start:
+`gunicorn app:app --workers 1 --threads 4 --timeout 300`
+
+## Important
+This is research software, not proof of future profitability. Historical data can be incomplete, exchange microstructure changes over time, and OHLC bars cannot perfectly reconstruct intra-candle event order. The engine deliberately assumes the stop was hit first whenever a stop and target are both reachable in the same candle.
+
+Use many symbols and market cycles, then confirm promising ideas with live paper trading.
+
+
+## Accuracy / modeling upgrade
+
+This build adds:
+- corrected partial-exit P&L accounting
+- targets recalculated from actual simulated fill price
+- capped rolling chart lookback for dramatically faster backtests
+- 96 controlled strategy variants instead of hundreds of near-duplicates
+- purged/embargoed walk-forward testing between training and unseen periods
+- higher-timeframe trend alignment derived without future data
+- liquidity sweep, rejection, compression, resistance-room and range-position features
+- regime-aware Bayesian-shrunk historical edge learning with uncertainty bounds
+- pooled out-of-sample performance metrics
+- data quality / missing-candle checks
+- MFE/MAE and entry-gap execution diagnostics
+- block-bootstrap Monte Carlo with 30% drawdown and half-account risk estimates
+- real fold/candidate progress reporting
+
+None of these changes guarantees profitability. They are intended to reduce backtest bias, expose weak assumptions and make any discovered edge harder to fake.
+
+
+## Resumable fast architecture
+
+This build replaces long in-memory research threads with database-checkpointed steps.
+
+- Feature calculations are precomputed once with O(N) rolling algorithms.
+- Strategy search is reduced to 24 intentionally separated candidates instead of 96 near-duplicates.
+- Every candidate is saved before the next one starts.
+- Every fold is saved before advancing.
+- Browser reloads automatically resume the active job.
+- A Gunicorn/Render restart can resume from the last saved checkpoint as long as the SQLite database remains available.
+- For guaranteed persistence across instance replacement, mount a Render persistent disk and set:
+  `RESEARCH_DB_PATH=/var/data/research.sqlite3`
+  `RESEARCH_DATA_DIR=/var/data/data`
+
+This is research software, not a guarantee of profitable future trading.
+
+
+## Signal funnel diagnostic upgrade
+
+This version will no longer silently report a zero-trade "best strategy".
+
+Each simulated candidate records:
+- candles checked
+- candles with valid features
+- qualified setups
+- entry attempts
+- actual entries opened
+- rejection counts by cause (trend alignment, RSI, volume, no trigger, resistance, weak learned edge, threshold, sizing, etc.)
+
+Candidates must produce at least 25 training trades to be eligible for selection. If no candidate qualifies, the fold is explicitly marked `insufficient_training_signals` and its most-active candidate is retained only for diagnosis.
+
+The Fold display is clamped correctly, so a completed 4-fold job no longer shows Fold 5/4.
