@@ -1,1 +1,0 @@
-# CryptO Research Lab
