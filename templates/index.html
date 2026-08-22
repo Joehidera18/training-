@@ -1,0 +1,309 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CryptO Research Lab</title>
+<style>
+:root{--bg:#07111c;--p:#0d1a28;--line:#21364d;--txt:#eef6ff;--muted:#8da2b8;--g:#6fe3ac;--r:#ff91a0;--c:#6fd6ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(111,214,255,.13),transparent 30%),var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,Arial}.shell{max-width:1120px;margin:auto;padding:0 16px 60px}.nav{height:64px;display:flex;align-items:center;border-bottom:1px solid #172a3b;font-weight:950}.hero{padding:26px 0 12px}.hero h1{font-size:38px;margin:0 0 8px}.hero p{color:var(--muted);max-width:800px;line-height:1.5}.panel{background:linear-gradient(180deg,#101e2d,#091520);border:1px solid var(--line);border-radius:17px;padding:14px;margin:13px 0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.stat{background:#091520;border:1px solid #1c3044;border-radius:11px;padding:10px}.stat small,label{display:block;color:#748aa1;font-size:9px;text-transform:uppercase}.stat b{display:block;font-size:15px;margin-top:4px}input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #284057;background:#101e2c;color:#eef6ff}textarea{min-height:60px}.actions{display:flex;gap:8px;margin-top:10px}.actions button{width:auto;background:#e0f3ff;color:#06111b;font-weight:900}.good{color:var(--g)}.bad{color:var(--r)}.muted{color:var(--muted)}pre{background:#07121c;border-radius:11px;padding:12px;overflow:auto;max-height:460px;color:#aec0d3}.run{padding:9px;border-bottom:1px solid #1c3044;font-size:11px}.msg{margin-top:8px;color:#ffd0d6}.badge{display:inline-block;padding:5px 7px;border-radius:999px;border:1px solid #29445d;color:#9bb1c7;font-size:9px;margin-right:5px}
+@media(max-width:820px){.grid,.stats{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:30px}}
+</style></head>
+<body><div class="shell">
+<div class="nav">CryptO Research Lab</div>
+<div class="hero"><h1>Test ideas like a research desk.</h1><p>Expanding walk-forward validation, train-only learning, dynamic liquidity/slippage assumptions, regime breakdowns, Monte Carlo stress tests and a permanent experiment notebook.</p></div>
+
+<div class="panel">
+<div class="grid">
+<div><label>Pair</label><input id="symbol" value="BTCUSDT"></div>
+<div><label>Timeframe</label><select id="interval"><option>5m</option><option selected>15m</option><option>1h</option><option>4h</option></select></div>
+<div><label>Years</label><input id="years" type="number" value="3" step=".5"></div>
+<div><label>Starting balance</label><input id="balance" type="number" value="500"></div>
+<div><label>Risk %</label><input id="risk" type="number" value="1" step=".1"></div>
+<div><label>Fee %</label><input id="fee" type="number" value=".4" step=".01"></div>
+<div><label>Base slippage %</label><input id="slip" type="number" value=".1" step=".01"></div>
+<div><label>Training split</label><input id="train" type="number" value="70" disabled></div>
+</div>
+<div style="margin-top:9px"><label>Experiment notes</label><textarea id="notes" placeholder="Example: testing stronger sweep / liquidity filters"></textarea></div>
+<div class="actions"><button onclick="download()">DOWNLOAD HISTORY</button><button onclick="run()">RUN RESEARCH LAB</button></div><div id="msg" class="msg"></div>
+</div>
+
+<div class="panel"><h2>Walk-Forward Results</h2>
+<div class="stats">
+<div class="stat"><small>Test trades</small><b id="trades">—</b></div><div class="stat"><small>Avg win rate</small><b id="win">—</b></div>
+<div class="stat"><small>Avg profit factor</small><b id="pf">—</b></div><div class="stat"><small>Expectancy</small><b id="exp">—</b></div>
+<div class="stat"><small>Worst drawdown</small><b id="dd">—</b></div><div class="stat"><small>Profitable folds</small><b id="folds">—</b></div>
+</div></div>
+
+<div class="panel"><h2>Monte Carlo Stress Test</h2>
+<div class="stats">
+<div class="stat"><small>Prob. profitable</small><b id="mcprob">—</b></div><div class="stat"><small>Median return</small><b id="mcmed">—</b></div>
+<div class="stat"><small>5th percentile</small><b id="mcp05">—</b></div><div class="stat"><small>95th percentile</small><b id="mcp95">—</b></div>
+<div class="stat"><small>Median max DD</small><b id="mcdd">—</b></div><div class="stat"><small>R samples</small><b id="mcsamples">—</b></div>
+</div><pre id="details">Run the lab to see fold-by-fold results, learned edge statistics and strategy parameters.</pre></div>
+
+
+
+
+
+
+<div class="panel"><h2>Sequence Entry Engine</h2>
+<p class="muted">Tests ordered setups instead of chasing one signal candle: liquidity event → BOS/CHOCH → retracement → confirmation → retrace-limit entry.</p>
+<div class="stats">
+<div class="stat"><small>Reversal sequences</small><b>Long + Short</b></div>
+<div class="stat"><small>Continuation sequences</small><b>Long + Short</b></div>
+<div class="stat"><small>Entry style</small><b>Retrace / Limit</b></div>
+<div class="stat"><small>Lookahead</small><b>None</b></div>
+</div></div>
+<div class="panel"><h2>Market Structure Intelligence V5.4</h2>
+<p class="muted">The lab now converts liquidity, BOS/CHOCH, FVG, equilibrium and daily-bias concepts into measurable features and learns which combinations actually survive unseen testing.</p>
+<div class="stats">
+<div class="stat"><small>Structure</small><b>HH/HL/LH/LL</b></div>
+<div class="stat"><small>BOS / CHOCH</small><b>Enabled</b></div>
+<div class="stat"><small>Liquidity map</small><b>Day/Week + EQH/EQL</b></div>
+<div class="stat"><small>FVG / IFVG</small><b>Enabled</b></div>
+<div class="stat"><small>Premium / Discount</small><b>Enabled</b></div>
+<div class="stat"><small>Sequence learning</small><b>Enabled</b></div>
+</div>
+<pre id="structureDetails">Run research to see the expectancy of individual concepts and multi-step setup sequences.</pre></div>
+<div class="panel"><h2>Quant Intelligence V4</h2>
+<p class="muted">Counterfactual learning, cross-coin memory, probability calibration, edge-stability checks, bounded dynamic risk, and optional historical order-flow / derivatives data.</p>
+<div class="stats">
+<div class="stat"><small>Microstructure data</small><b id="microAvailable">OHLCV proxy</b></div>
+<div class="stat"><small>Edge stability</small><b id="edgeStable">—</b></div>
+<div class="stat"><small>Calibration Brier</small><b id="brier">—</b></div>
+<div class="stat"><small>Rejected setups learned</small><b id="cfSamples">—</b></div>
+<div class="stat"><small>Missed 1R rate</small><b id="cf1r">—</b></div>
+<div class="stat"><small>Risk sizing</small><b>0.25–1.0×</b></div>
+</div>
+<pre id="quantDetails">Order-flow features activate only when historical microstructure rows are supplied.</pre></div>
+<div class="panel"><h2>Strategy Family Research</h2>
+<p class="muted">The optimizer uses nested validation, regime-specific long/short families, adaptive challengers, cost controls, and a no-edge/no-trade option.</p>
+<div class="stats">
+<div class="stat"><small>Families</small><b>10</b></div>
+<div class="stat"><small>Direction</small><b>Long + Short</b></div>
+<div class="stat"><small>Candidates</small><b id="familyCandidates">48</b></div>
+<div class="stat"><small>Selected family</small><b id="selectedFamily">—</b></div>
+<div class="stat"><small>Selected direction</small><b id="selectedDirection">—</b></div>
+<div class="stat"><small>Engine</small><b>Market Structure V5.4</b></div>
+</div>
+<pre id="familyDetails">Families: trend breakout, trend pullback, liquidity reclaim, mean reversion, bearish breakdown, bearish rally fade, reversal sequence long/short, continuation sequence long/short.</pre></div>
+<div class="panel"><h2>Signal Funnel</h2>
+<p class="muted">Shows exactly where potential setups were filtered out. A zero-trade run should now explain why.</p>
+<div class="stats">
+<div class="stat"><small>Candles checked</small><b id="fcandles">—</b></div>
+<div class="stat"><small>Features ready</small><b id="ffeatures">—</b></div>
+<div class="stat"><small>Qualified setups</small><b id="fqualified">—</b></div>
+<div class="stat"><small>Entry attempts</small><b id="fattempts">—</b></div>
+<div class="stat"><small>Entries opened</small><b id="fopened">—</b></div>
+<div class="stat"><small>Top bottleneck</small><b id="fbottleneck">—</b></div>
+</div>
+<pre id="funnelDetails">Run the lab to see rejection reasons.</pre></div>
+<div class="panel"><h2>Model Reliability</h2>
+<div class="stats">
+<div class="stat"><small>Data coverage</small><b id="coverage">—</b></div>
+<div class="stat"><small>Data gaps</small><b id="gaps">—</b></div>
+<div class="stat"><small>Risk 30% DD</small><b id="risk30">—</b></div>
+<div class="stat"><small>Risk half account</small><b id="riskhalf">—</b></div>
+<div class="stat"><small>Avg MFE</small><b id="mfe">—</b></div>
+<div class="stat"><small>Avg MAE</small><b id="mae">—</b></div>
+</div></div>
+
+
+<div class="panel"><h2>Filter Diagnostics</h2>
+<p class="muted">Shows whether the strategy is finding genuine setups or being strangled by filters.</p>
+<div class="stats">
+<div class="stat"><small>Validation trades</small><b id="diagTrades">—</b></div>
+<div class="stat"><small>Active folds</small><b id="diagFolds">—</b></div>
+<div class="stat"><small>Top rejection</small><b id="diagTop">—</b></div>
+</div>
+<pre id="diagDetails">Run research to see which filters are doing the most rejecting.</pre></div>
+<div class="panel"><h2>Execution & Model Audit</h2>
+<p class="muted">Separates strategy losses from trading-cost drag and suspicious execution math.</p>
+<div class="stats">
+<div class="stat"><small>Avg gross R</small><b id="auditGross">—</b></div>
+<div class="stat"><small>Avg fee R</small><b id="auditFees">—</b></div>
+<div class="stat"><small>Avg stop R</small><b id="auditStop">—</b></div>
+<div class="stat"><small>Avg MFE</small><b id="auditMfe">—</b></div>
+<div class="stat"><small>Avg MAE</small><b id="auditMae">—</b></div>
+<div class="stat"><small>Audit flags</small><b id="auditFlags">—</b></div>
+</div>
+<pre id="auditDetails">Run research to audit execution and probability calibration.</pre></div>
+<div class="panel"><h2>Persistent Learning Memory</h2>
+<p class="muted">Completed unseen trades become long-term evidence. Bad experiments are remembered, but a new model only becomes Champion after passing strict out-of-sample gates.</p>
+<div class="stats">
+<div class="stat"><small>Remembered trades</small><b id="memsamples">—</b></div>
+<div class="stat"><small>Memory win rate</small><b id="memwin">—</b></div>
+<div class="stat"><small>Memory expectancy</small><b id="memexp">—</b></div>
+<div class="stat"><small>Champion</small><b id="champion">None yet</b></div>
+<div class="stat"><small>Last challenger</small><b id="challenger">—</b></div>
+<div class="stat"><small>Top mistake</small><b id="topmistake">—</b></div>
+</div>
+<pre id="learningDetails">The lab will build permanent memory after completed tests.</pre></div>
+<div class="panel"><h2>Experiment Notebook</h2><div id="history" class="muted">Loading…</div></div>
+</div>
+<script>
+const v=id=>document.getElementById(id).value;
+const msg=x=>document.getElementById('msg').textContent=x||'';
+let jobId=null, driving=false, recovering=false;
+const JOB_KEY='cryptoResearchActiveJobV53';
+const CFG_KEY='cryptoResearchConfigV53';
+
+function saveLaunch(job,cfg){
+  try{localStorage.setItem(JOB_KEY,job||'');localStorage.setItem(CFG_KEY,JSON.stringify(cfg||{}));}catch(e){}
+}
+function clearLaunch(){try{localStorage.removeItem(JOB_KEY)}catch(e){}}
+function savedConfig(){try{return JSON.parse(localStorage.getItem(CFG_KEY)||'null')}catch(e){return null}}
+function currentConfig(){
+  return {symbol:v('symbol'),interval:v('interval'),years:Number(v('years')),
+    starting_balance:Number(v('balance')),risk_per_trade:Number(v('risk'))/100,
+    fee_rate:Number(v('fee'))/100,slippage_rate:Number(v('slip'))/100,notes:v('notes')};
+}
+
+function renderResult(d){
+  const w=d.walk_forward||{},m=d.monte_carlo||{};
+  const set=(id,x)=>{const e=document.getElementById(id);if(e)e.textContent=x};
+  set('trades',w.trades??'—');set('win',(w.avg_win_rate??'—')+'%');
+  set('pf',w.avg_profit_factor??'—');set('exp',(w.avg_expectancy_r??'—')+' R');
+  set('dd',(w.worst_drawdown_pct??'—')+'%');set('folds',(w.profitable_folds??'—')+'/'+(w.folds??'—'));
+  set('mcprob',(m.probability_profitable??'—')+'%');set('mcmed',(m.median_return_pct??'—')+'%');
+  set('mcp05',(m.p05_return_pct??'—')+'%');set('mcp95',(m.p95_return_pct??'—')+'%');
+  set('mcdd',(m.median_max_drawdown_pct??'—')+'%');set('mcsamples',m.samples??'—');
+  set('coverage',(d.data_quality?.coverage_pct??'—')+'%');set('gaps',d.data_quality?.gaps??'—');
+  set('risk30',(m.risk_of_30pct_drawdown??'—')+'%');set('riskhalf',(m.risk_of_half_account??'—')+'%');
+  const f=d.signal_funnel||{};
+  set('fcandles',f.candles_checked??'—');set('ffeatures',f.features_available??'—');
+  set('fqualified',f.qualified_setups??'—');set('fattempts',f.entry_attempts??'—');
+  set('fopened',f.entries_opened??'—');
+  const rej=f.rejections||{};const top=Object.entries(rej)[0];
+  set('fbottleneck',top?`${top[0]} (${top[1]})`:'—');
+  const fd=document.getElementById('funnelDetails');if(fd)fd.textContent=JSON.stringify(rej,null,2);
+    set('selectedFamily',d.best_params?.family??'—');
+  set('selectedDirection',d.best_params?.direction??'—');
+  set('familyCandidates',d.architecture?.candidate_count??'—');
+  const fam=document.getElementById('familyDetails');
+  if(fam)fam.textContent=JSON.stringify({family_selection:d.family_selection,capabilities:d.capabilities},null,2);
+    const a=d.execution_audit||{};
+  set('auditGross',(a.avg_gross_r??'—')+' R');set('auditFees',(a.avg_fee_r??'—')+' R');
+  set('auditStop',(a.avg_stop_r??'—')+' R');set('auditMfe',(a.avg_mfe_r??'—')+' R');
+  set('auditMae',(a.avg_mae_r??'—')+' R');set('auditFlags',a.flagged_trades??'—');
+  const ad=document.getElementById('auditDetails');if(ad)ad.textContent=JSON.stringify(a,null,2);
+    const q=d.counterfactual_learning||{},st=d.edge_stability||{},mi=d.microstructure||{},cal=(d.execution_audit||{}).calibration||{};
+  set('microAvailable',mi.available?`${mi.rows} rows`:'OHLCV proxy');set('edgeStable',st.stable?'YES':'NO');
+  set('brier',cal.brier_score??'—');set('cfSamples',q.samples??0);set('cf1r',(q.would_hit_1r_pct??'—')+'%');
+  const qd=document.getElementById('quantDetails');if(qd)qd.textContent=JSON.stringify({edge_stability:st,specialist_ensemble:d.specialist_ensemble,counterfactual_learning:q,microstructure:mi,calibration:cal},null,2);
+    const si=d.setup_intelligence||{};
+  const sd=document.getElementById('structureDetails');if(sd)sd.textContent=JSON.stringify(si,null,2);
+    const fdg=d.filter_diagnostics||{};
+  set('diagTrades',fdg.validation_trades??'—');set('diagFolds',fdg.folds_with_validation_trades??'—');
+  const tr=(fdg.top_validation_rejections||[])[0];set('diagTop',tr?`${tr.reason} (${tr.count})`:'—');
+  const dde=document.getElementById('diagDetails');if(dde)dde.textContent=JSON.stringify(fdg,null,2);
+  document.getElementById('details').textContent=JSON.stringify(d,null,2);
+}
+
+function showJob(j){
+  if(!j)return;
+  const detail=(j.fold&&j.folds)?` Fold ${j.fold}/${j.folds}`:'';
+  const cand=(j.stage==='candidates'&&j.candidates)?` · Strategy ${Math.min(j.candidate,j.candidates)}/${j.candidates}`:'';
+  msg(`${j.message||j.stage||'Working…'}${detail}${cand} · ${Math.round(j.progress||0)}%`);
+}
+
+async function recoverLostJob(){
+  if(recovering)return;
+  recovering=true;driving=false;
+  try{
+    const r=await fetch('/api/jobs/active',{cache:'no-store'});
+    const active=await r.json();
+    if(active.status==='running'){
+      jobId=active.id;saveLaunch(jobId,savedConfig());
+      msg('Server restarted. Resuming saved checkpoint…');showJob(active);
+      recovering=false;setTimeout(drive,700);return;
+    }
+    const cfg=savedConfig();
+    if(!cfg){
+      jobId=null;clearLaunch();msg('Server restarted and the old checkpoint is gone. Start a new research run.');
+      recovering=false;return;
+    }
+    const recoveryKey='cryptoResearchRecovered:'+jobId;
+    if(sessionStorage.getItem(recoveryKey)){
+      jobId=null;clearLaunch();
+      msg('The server restarted again and could not preserve the checkpoint. Configure persistent storage before another long run.');
+      recovering=false;return;
+    }
+    sessionStorage.setItem(recoveryKey,'1');
+    msg('Server restarted and lost its local checkpoint. Rebuilding the run automatically from the saved settings…');
+    const start=await fetch('/api/jobs/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+    const d=await start.json();
+    if(!start.ok)throw new Error(d.error||'Could not rebuild research job');
+    jobId=d.job_id;saveLaunch(jobId,cfg);
+    recovering=false;setTimeout(drive,700);
+  }catch(e){
+    jobId=null;clearLaunch();recovering=false;msg('Recovery stopped: '+e.message);
+  }
+}
+
+async function drive(){
+  if(driving||recovering||!jobId)return;
+  driving=true;
+  try{
+    const r=await fetch(`/api/jobs/${jobId}/step`,{method:'POST',cache:'no-store'});
+    const j=await r.json();
+    if(r.status===404||r.status===410||j.code==='JOB_CHECKPOINT_LOST'){
+      driving=false;await recoverLostJob();return;
+    }
+    if(!r.ok&&j.status!=='error')throw new Error(j.error||j.message||`HTTP ${r.status}`);
+    showJob(j);
+    if(j.status==='complete'){
+      renderResult(j.result||{});jobId=null;clearLaunch();history();learningSummary();driving=false;return;
+    }
+    if(j.status==='error'){
+      msg('Research stopped: '+(j.error||'unknown error'));jobId=null;clearLaunch();driving=false;return;
+    }
+  }catch(e){msg('Connection interrupted. Retrying checkpoint…');}
+  driving=false;
+  if(jobId)setTimeout(drive,900);
+}
+
+async function run(){
+  if(jobId){msg('Research is already running.');return}
+  try{
+    const cfg=currentConfig();
+    const r=await fetch('/api/jobs/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+    const d=await r.json();
+    if(!r.ok){msg(d.error||'Could not start.');await resumeActive();return}
+    jobId=d.job_id;saveLaunch(jobId,cfg);msg('Research job created. Preparing…');drive();
+  }catch(e){msg('Could not start research: '+e.message)}
+}
+
+async function resumeActive(){
+  try{
+    const r=await fetch('/api/jobs/active',{cache:'no-store'});const j=await r.json();
+    if(j.status==='running'){
+      jobId=j.id;saveLaunch(jobId,savedConfig()||currentConfig());showJob(j);setTimeout(drive,500);return true;
+    }
+    const remembered=localStorage.getItem(JOB_KEY);
+    if(remembered){jobId=remembered;setTimeout(drive,500);return true;}
+  }catch(e){}
+  return false;
+}
+
+async function history(){
+  try{
+    const r=await fetch('/api/runs',{cache:'no-store'});const d=await r.json();
+    document.getElementById('history').innerHTML=d.length?d.map(x=>`<div class="run"><span class="badge">${x.config_hash||'run'}</span><b>#${x.id} ${x.symbol} ${x.interval}</b> · ${x.walk_forward?.trades??0} test trades · PF ${x.walk_forward?.avg_profit_factor??'—'} · expectancy ${x.walk_forward?.avg_expectancy_r??'—'}R</div>`).join(''):'No experiments yet.';
+  }catch(e){}
+}
+
+async function learningSummary(){
+  try{
+    const r=await fetch(`/api/learning/summary?symbol=${encodeURIComponent(v('symbol'))}&interval=${encodeURIComponent(v('interval'))}`,{cache:'no-store'});
+    const d=await r.json(),m=d.memory||{};
+    const set=(id,x)=>{const e=document.getElementById(id);if(e)e.textContent=x};
+    set('memsamples',m.samples??0);set('memwin',(m.win_rate??'—')+'%');
+    set('memexp',(m.expectancy_r??'—')+' R');
+    set('champion',d.champion?`v${d.champion.version}`:'None yet');
+    const c=(d.challengers||[])[0];set('challenger',c?(c.promoted?'PROMOTED':'REJECTED'):'—');
+    const tm=(m.top_mistakes||[])[0];set('topmistake',tm?`${tm.name} (${tm.count})`:'—');
+    const el=document.getElementById('learningDetails');
+    if(el)el.textContent=JSON.stringify(d,null,2);
+  }catch(e){}
+}
+history();learningSummary();resumeActive();
+</script></body></html>
