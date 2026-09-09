@@ -1,0 +1,25 @@
+# Creates a paid web service and a 1 GB persistent disk when you deploy it.
+# Read WEBSITE_SETUP.md before deployment. This archive has not been deployed.
+services:
+  - type: web
+    name: crypto-research-lab
+    runtime: python
+    plan: 0.5c-512mb
+    numInstances: 1
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 300
+    healthCheckPath: /api/health
+    autoDeployTrigger: "off"
+    disk:
+      name: crypto-state
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: APP_ACCESS_TOKEN
+        generateValue: true
+      - key: RESEARCH_DB_PATH
+        value: /var/data/research.sqlite3
+      - key: RESEARCH_DATA_DIR
+        value: /var/data/research-data
+      - key: COINBASE_ALLOW_LIVE
+        value: "0"
