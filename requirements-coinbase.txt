@@ -1,0 +1,2 @@
+# Official Coinbase SDK, version checked against PyPI on 2026-09-07.
+coinbase-advanced-py==1.8.4

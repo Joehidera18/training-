@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CryptO — Automatic Learning &amp; Coinbase</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js" defer></script>
+<script src="/static/coinbase.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<header>
+  <a class="brand" href="/" aria-label="CryptO home"><span class="brand-icon">C</span><span>CryptO<small>AUTOMATIC LEARNING · V11</small></span></a>
+  <div class="top-actions"><span id="runtimeBadge" class="badge">Stopped</span><button id="startBtn" class="primary">Start learning &amp; paper trading</button><button id="pauseBtn">Pause entries</button><button id="stopBtn">Stop</button></div>
+</header>
+<div id="notice" class="notice" role="status" hidden></div>
+<div id="accessPanel" class="panel" hidden><form id="accessForm" class="inline-form"><label>App access token <input id="accessToken" type="password" autocomplete="current-password" required></label><button class="primary">Connect</button></form></div>
+<section class="panel learning-panel" aria-labelledby="learningHeading">
+<div class="panel-title"><h1 id="learningHeading">Your trading system</h1><span id="learningPhase" class="badge">Ready</span></div>
+<p id="learningMessage" role="status">Start to study up to three years of history for five liquid Coinbase markets, test learned decisions, and practice with $500 in paper money.</p>
+<div class="small-metrics learning-metrics"><div>Market-data hours studied<strong id="learningHours">0</strong></div><div>Paper trades learned from<strong id="learningTrades">0</strong></div><div>Markets ready to trade<strong id="learningMarkets">0</strong></div></div>
+<div class="learning-settings"><label>Coinbase fee per side (%) <input id="autoFee" type="number" min="0" max="2" step="0.001" value="0.4"></label><p class="footnote">Use your actual fee. The initial 0.4% is an assumption. Hours are summed across coins. Real orders stay off until you separately configure and enable Coinbase.</p></div>
+<details><summary>What has it learned?</summary><div id="learningResults"><p class="empty">Learning results will appear here. A rejected strategy will not be forced to trade.</p></div><button id="learningExport" class="small">Download learning report</button></details>
+</section>
+<nav aria-label="Dashboard sections" class="tabs">
+<button class="active" data-tab="overview">Overview</button><button data-tab="markets">Markets</button><button data-tab="journal">Trades</button><button data-tab="coinbase">Coinbase</button><button data-tab="research">Advanced research</button><button data-tab="settings">Settings</button>
+</nav>
+<main>
+<section id="overview" class="tab-panel">
+<div class="metrics">
+<article class="metric"><span>Marked paper equity</span><strong id="equity">$500.00</strong><small id="equityNote">Starting balance · $500</small></article>
+<article class="metric"><span>Net account return</span><strong id="return">0.00%</strong><small id="realized">Realized P&amp;L · $0.00</small></article>
+<article class="metric"><span>Open risk at stops</span><strong id="openRisk">$0.00</strong><small id="exposure">Position value · $0.00</small></article>
+<article class="metric"><span>Current research profiles</span><strong id="profiles">0</strong><small>Passing results for these settings</small></article>
+</div>
+<div class="two-col">
+<article class="panel chart-panel"><div class="panel-title"><div><p class="eyebrow">ACCOUNT HISTORY</p><h2>Realized balance</h2></div><span id="tradeCount" class="badge">0 closed trades</span></div><div id="balanceChart" class="chart"><p class="empty">Your balance history will appear after a paper trade closes.</p></div><div class="small-metrics"><div>Win rate<strong id="winRate">—</strong></div><div>Profit factor<strong id="profitFactor">—</strong></div><div>Mean net R<strong id="expectancy">—</strong></div><div>Closed drawdown<strong id="drawdown">—</strong></div></div><p class="footnote">R measures net P&amp;L divided by the estimated loss at the initial stop. Gaps can exceed that loss.</p></article>
+<article class="panel"><p class="eyebrow">TODAY · UTC</p><h2 id="dayPnl">—</h2><p id="dayNote" class="muted">Start the paper trader to begin tracking today.</p><div class="goal-track"><div id="goalFill"></div></div><div class="between muted"><span>$0</span><span>$10–$15 goal</span></div><hr><h3>Execution status</h3><p id="streamState" class="muted">Paper trader is stopped.</p><p id="bootstrapState" class="muted"></p><p id="entryState" class="callout">Historical validation is required before new paper entries.</p><p class="footnote">Pausing keeps existing positions monitored. Stopping the app also stops its paper exits.</p></article>
+</div>
+<article class="panel"><div class="panel-title"><h2>Open paper positions</h2><span class="badge">LONG ONLY · NO LEVERAGE</span></div><div class="table-wrap"><table><thead><tr><th>Market / setup</th><th>Entry</th><th>Stop / target</th><th>Risk</th><th>Net unrealized</th><th></th></tr></thead><tbody id="positions"></tbody></table></div></article>
+<div class="two-col">
+<article class="panel"><div class="panel-title"><h2>Setup rankings</h2><button id="refreshRankings">Refresh rankings</button></div><p class="footnote">Rankings stay in place until you refresh. Scores are signals, not profit probabilities.</p><div id="rankings"><p class="empty">Refresh after the trader has loaded its markets.</p></div></article>
+<article class="panel"><h2>Recent activity</h2><div id="activity" class="activity"><p class="empty">No activity yet.</p></div></article>
+</div>
+</section>
+<section id="research" class="tab-panel" hidden>
+<article class="panel"><p class="eyebrow">TEST THE IDEA BEFORE TRUSTING IT</p><h2>Historical strategy research</h2><p class="muted">Sixteen fixed candidates across trend pullbacks, volume breakouts, range reclaims, and a breakout with combined confirmations. Selection uses chronological training and validation, then tests frozen choices in later windows and a final holdout.</p>
+<form id="researchForm" class="inline-form"><label class="grow">Coinbase USD markets <input id="researchSymbols" value="BTC-USD, ETH-USD, SOL-USD" required placeholder="BTC-USD, ETH-USD"></label><label>History <select id="researchDays"><option value="90">90 days</option><option value="180" selected>180 days</option><option value="365">365 days</option></select></label><button id="researchRun" class="primary">Run research</button><button type="button" id="researchCancel">Cancel</button></form>
+<p id="researchCosts" class="callout"></p><p class="footnote">Choose your actual fee in Settings first. At 1-hour resolution, use 180 or 365 days to meet the 3,000-candle minimum. Missing candles cause rejection. Downloads can take several minutes.</p>
+<div class="between"><p id="researchMessage" role="status">No historical validation yet.</p><button id="researchExport" class="small">Export results</button></div><progress id="researchProgress" value="0" max="1" aria-label="Research progress"></progress></article>
+<div id="researchResults"><p class="empty">No results yet. A valid outcome is that every strategy is rejected.</p></div>
+</section>
+<section id="markets" class="tab-panel" hidden>
+<article class="panel"><h2>Markets & decisions</h2><p class="muted">Fresh quotes and complete candles are required. Each market explains why it is waiting.</p><div class="table-wrap"><table><thead><tr><th>Market</th><th>Price</th><th>Quote age</th><th>Candles<br>5m / 15m / 1h / 4h</th><th>Context</th><th>Latest decision</th></tr></thead><tbody id="marketsTable"></tbody></table></div></article>
+</section>
+<section id="journal" class="tab-panel" hidden>
+<article class="panel"><div class="panel-title"><div><p class="eyebrow">EVERY FILL, EVERY COST</p><h2>Paper trade journal</h2></div><button id="tradeExport">Download all trades</button></div><div class="table-wrap"><table><thead><tr><th>Opened / market</th><th>Strategy</th><th>Status</th><th>Net P&amp;L</th><th>Net R</th><th>Exit reason</th></tr></thead><tbody id="journalTable"></tbody></table></div><p class="footnote">The table shows the latest 100 trades. CSV includes the full journal. No real exchange orders are submitted.</p></article>
+<article class="panel"><h2>Results by strategy</h2><div id="strategyResults"></div></article>
+</section>
+<section id="coinbase" class="tab-panel" hidden>
+<article class="panel">
+<div class="panel-title"><div><p class="eyebrow">COINBASE ADVANCED · USD SPOT</p><h2>Account connection</h2></div><span id="cbMode" class="badge">Not connected</span></div>
+<p class="muted">Connect using a local ECDSA API key. Your key stays on the computer running this app. Preview mode submits no exchange orders.</p>
+<div class="top-actions wrap"><button id="cbSync">Sync account &amp; fees</button><button id="cbApplyFee">Use Coinbase fee in research</button><button id="cbPreview" class="primary">Start preview runner</button><button id="cbStop">Stop Coinbase runner</button></div>
+<p id="cbMessage" class="callout" role="status">Configure the local key and app access token to connect.</p>
+<div class="result-metrics"><div>Available USD<strong id="cbCash">—</strong></div><div>Taker / maker fee<strong id="cbFees">—</strong></div><div>Bot realized P&amp;L<strong id="cbPnl">—</strong></div><div>Bot marked equity<strong id="cbEquity">—</strong></div></div>
+<p id="cbAccountNote" class="footnote"></p>
+</article>
+<div class="two-col">
+<article class="panel"><p class="eyebrow">INSPECT BEFORE ENABLING</p><h2>Latest Coinbase preview</h2><div id="cbPreviewResult"><p class="empty">A fresh, qualified strategy signal is required. Start the paper/market runner and run historical research first.</p></div><p class="footnote">A preview is not a fill or a promise of execution. Entry uses a price-capped fill-or-kill buy with attached take-profit and stop-loss protection. Unsupported combinations are rejected. The app also checks visible buy and sell depth before entry. Potential target profit assumes the target is reached; it is not an expected return.</p></article>
+<article class="panel"><p class="eyebrow">REAL-MONEY CONTROLS</p><h2>Live Coinbase runner</h2><p class="muted">Real orders require local opt-in, View and Trade permissions without Transfer, and a dedicated USD-funded spot portfolio. The initial live version caps capital at $500, each entry at $150, and holds one position at a time.</p><div class="top-actions wrap"><button id="cbLive" class="danger">Enable live runner</button><button id="cbPause">Pause Coinbase entries</button><button id="cbClose" class="danger">Close bot position</button></div><p id="cbDay" class="footnote"></p><p class="footnote">Current rules require at least 1.5 units of potential reward after costs per unit of modeled stop risk. After three consecutive net losses, that market waits six hours before another entry.</p><p class="footnote">Pausing preserves exit monitoring. Stopping leaves submitted exchange orders in place. Missing protection, unknown submissions, or residual holdings require attention on Coinbase. Stop execution can fail in volatile markets.</p></article>
+</div>
+<article class="panel"><h2>Coinbase order journal</h2><p class="muted">These records use confirmed exchange fills. They do not include trades made outside this bot.</p><div class="table-wrap"><table><thead><tr><th>Created / market</th><th>Status</th><th>Purchased / remaining</th><th>Net realized</th><th>Exchange order ID</th><th>Note</th></tr></thead><tbody id="cbTrades"></tbody></table></div></article>
+</section>
+<section id="settings" class="tab-panel" hidden>
+<article class="panel"><p class="eyebrow">COSTS COME FIRST</p><h2>Research &amp; paper account settings</h2><p class="muted">The default fee is an assumption, not your confirmed exchange tier. Changing the interval, risk size, position cap, fee, or slippage requires matching historical research again.</p><form id="settingsForm">
+<div class="form-grid">
+<label>Decision interval<select name="decision_interval"><option value="5m">5 minutes</option><option value="15m">15 minutes</option><option value="1h">1 hour</option></select></label>
+<label>Fee per side (%)<input name="fee_rate" type="number" min="0" max="2" step="0.001" required></label>
+<label>Slippage per fill (%)<input name="slippage_rate" type="number" min="0" max="1" step="0.001" required></label>
+<label>Risk per trade (%)<input name="risk_per_trade" type="number" min="0.1" max="2" step="0.05" required></label>
+<label>Total open risk (%)<input name="max_total_risk" type="number" min="0.5" max="8" step="0.1" required></label>
+<label>Daily entry loss limit (%)<input name="daily_loss_limit" type="number" min="0.5" max="10" step="0.1" required></label>
+<label>Maximum open positions<input name="max_positions" type="number" min="1" max="10" step="1" required></label>
+<label>Markets monitored (stop first)<input name="universe_size" type="number" min="1" max="30" step="1" required></label>
+<label>Maximum position value (%)<input name="max_notional_fraction" type="number" min="5" max="100" step="1" required></label>
+<label>Maximum bid/ask spread (%)<input name="max_spread" type="number" min="0.01" max="2" step="0.01" required></label>
+</div>
+<label class="check"><input name="validated_only" type="checkbox" checked> Require a current passing historical profile before paper entries</label>
+<p class="footnote">If disabled, unvalidated experiments use one quarter of the configured trade risk. Historical research still uses the full configured risk. Research qualifies individual markets; combined portfolio performance needs forward paper testing.</p>
+<button class="primary">Save settings</button><span id="settingsSaved" class="muted"></span>
+</form></article>
+<article class="panel"><h2>Account history</h2><p class="muted">Download a database backup to preserve settings, trades, research, and learned observations.</p><button id="backupBtn">Download database backup</button><hr><h3>Reset the paper account</h3><p class="muted">Close all paper positions before resetting. Reset returns the account to $500 and clears its journal; a database backup is created first.</p><label class="check"><input id="keepMemory" type="checkbox" checked> Keep learned observations and research</label><button id="resetBtn" class="danger">Reset paper account</button></article>
+</section>
+</main>
+<footer>CryptO Research Lab V8 <span>Paper and Coinbase accounts are separate · Taxes and hosting costs excluded</span></footer>
+</div>
+</body>
+</html>
